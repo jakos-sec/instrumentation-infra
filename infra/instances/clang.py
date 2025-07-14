@@ -31,15 +31,18 @@ class Clang(Instance):
         *,
         optlevel: Union[int, str] = 2,
         lto: bool = False,
+        thin_lto: bool = False,
         alloc: str = "system"
     ):
         assert optlevel in (0, 1, 2, 3, "s"), "invalid optimization level"
         assert not (lto and optlevel == 0), "LTO needs compile-time opts"
         assert alloc in ("system", "tcmalloc"), "unsupported allocator"
+        assert not (lto and thin_lto), "Cannot have thin_lto and full lto"
 
         self.llvm = llvm
         self.optflag = "-O" + str(optlevel)
         self.lto = lto
+        self.thin_lto = thin_lto
         self.alloc = alloc
 
         if self.alloc == "tcmalloc":
@@ -52,6 +55,8 @@ class Clang(Instance):
             name += self.optflag
         if self.lto:
             name += "-lto"
+        if self.thin_lto:
+            name += "-thinlto"
         if self.alloc != "system":
             name += "-" + self.alloc
         return name
@@ -72,6 +77,11 @@ class Clang(Instance):
         ctx.cflags += [self.optflag]
         ctx.cxxflags += [self.optflag]
 
+        if self.thin_lto:
+            ctx.cflags += ["-flto=thin"]
+            ctx.cxxflags += ["-flto=thin"]
+            ctx.ldflags += ["-flto=thin"]
+            ctx.lib_ldflags += ["-flto=thin"]
         if self.lto:
             ctx.cflags += ["-flto"]
             ctx.cxxflags += ["-flto"]
