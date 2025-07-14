@@ -226,7 +226,7 @@ class SPEC2017(Target):
         elif self.source_type == "tarfile":
             ctx.log.debug("extracting SPEC-CPU2017 source files")
             run(ctx, ["tar", "xf", self.source])
-            srcdir = re.sub(r"(\.tar\.gz|\.tgz)$", "", os.path.basename(self.source))
+            srcdir = re.sub(r"(\.tar\.gz|\.tgz|\.tar\.xz)$", "", os.path.basename(self.source))
             if not os.path.exists(srcdir):
                 raise FatalError(
                     f"extracted SPEC tarfile in {os.getcwd()}, could not "
