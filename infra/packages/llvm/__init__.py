@@ -80,12 +80,12 @@ class LLVM(Package):
 
     def dependencies(self) -> Iterator[Package]:
         # TODO: prune these
-        yield Bash("4.3")
+        yield Bash("5.1.16")
         yield CoreUtils("9.1")
         yield self.binutils
         yield Make("4.3")
         yield AutoMake.default()
-        yield CMake("3.16.3")
+        yield CMake("3.28.6")
         yield Ninja("1.8.2")
 
     def fetch(self, ctx: Context) -> None:
