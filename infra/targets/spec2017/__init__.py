@@ -188,7 +188,7 @@ class SPEC2017(Target):
         )
 
     def dependencies(self) -> Iterator[Package]:
-        yield Bash("5.1.16")
+        yield Bash("5.3")
         if self.nothp:
             yield Nothp()
         yield RusageCounters()

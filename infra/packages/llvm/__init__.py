@@ -49,7 +49,7 @@ class LLVM(Package):
     """
 
     # supported_versions = ('3.8.0', '3.9.1', '4.0.0', '5.0.0')
-    binutils = BinUtils("2.38", gold=True)
+    binutils = BinUtils("2.44", gold=False)
 
     def __init__(
         self,
@@ -80,7 +80,7 @@ class LLVM(Package):
 
     def dependencies(self) -> Iterator[Package]:
         # TODO: prune these
-        yield Bash("5.1.16")
+        yield Bash("5.3")
         yield CoreUtils("9.1")
         yield self.binutils
         yield Make("4.3")
