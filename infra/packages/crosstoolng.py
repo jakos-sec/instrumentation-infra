@@ -13,7 +13,7 @@ class CrosstoolNG(Package):
     or for example to run a custom glibc or another custom component.
     """
 
-    def __init__(self, version: str = "1.25.0"):
+    def __init__(self, version: str = "1.27.0"):
         self.version = version
 
     def ident(self) -> str:
@@ -99,7 +99,27 @@ class CustomToolchain(Package):
         # CT_ZLIB_VERSION 1.2.12 download no longer exists
         run(
             ctx,
-            ["sed", "-i", 's/CT_ZLIB_VERSION=.*/CT_ZLIB_VERSION="1.2.13"/', ".config"],
+            ["sed", "-i", 's/CT_ZLIB_VERSION=.*/CT_ZLIB_VERSION="1.3.1"/', ".config"],
+        )
+        # Override location for tarballs
+        local_tarballs_dir = self.path(ctx, "obj", "tarballs_dir").replace("/", "\\/")
+        run(
+            ctx,
+            [
+                "sed",
+                "-i",
+                's/CT_LOCAL_TARBALLS_DIR=.*/CT_LOCAL_TARBALLS_DIR="%s"/' % local_tarballs_dir,
+                ".config"
+            ],
+        )
+        # Allow downloads for the linux kernel
+        run(
+            ctx,
+            ["sed", "-i", 's/CT_FORBID_DOWNLOAD=.*/CT_FORBID_DOWNLOAD=n/', ".config"],
+        )
+        run(
+            ctx,
+            ["sed", "-i", 's/CT_DOWNLOAD_AGENT_NONE=.*/CT_DOWNLOAD_AGENT_CURL=y/', ".config"],
         )
 
         if self.glibc_version:
@@ -216,6 +236,7 @@ class CustomToolchain(Package):
     def build(self, ctx: Context) -> None:
         obj_dir = self.path(ctx, "obj")
         os.makedirs("obj", exist_ok=True)
+        os.makedirs("obj/tarballs_dir", exist_ok=True)
         os.chdir("obj")
 
         ct_ng_bin = self.crosstoolNG.path(ctx, "install/bin/ct-ng")
